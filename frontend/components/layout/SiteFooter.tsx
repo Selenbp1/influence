@@ -24,6 +24,9 @@ export function SiteFooter({ settings }: { settings?: SiteSetting | null }) {
               {item.label}
             </Link>
           ))}
+          <Link href="/admin" className="hover:text-black">
+            관리자
+          </Link>
         </div>
         <div className="space-y-3 text-sm text-neutral-600">
           <p className="flex items-center gap-2">

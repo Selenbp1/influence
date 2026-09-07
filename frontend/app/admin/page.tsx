@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
         <p className="font-display tracking-[0.22em]">INFLUENCE</p>
         <h1 className="text-2xl">관리자 로그인</h1>
         <p className="text-sm leading-6 text-neutral-500">
-          홈페이지 글과 사진을 수정하는 화면입니다. 비밀번호는 처음 한 번 개발자에게 받아주세요.
+          로그인하면 인플루언서, 포트폴리오, 문의 내용을 블로그처럼 수정할 수 있습니다. 저장하면 홈페이지에 바로 반영됩니다.
         </p>
         <Input
           type="password"

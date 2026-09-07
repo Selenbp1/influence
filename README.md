@@ -55,27 +55,20 @@ npm run dev
 - **Vercel**: 홈페이지와 API를 실행합니다.
 - **Neon**: 문의, 인플루언서, 포트폴리오 같은 **데이터**를 보관합니다. GitHub에 올라가지 않습니다.
 
-친구는 관리자 화면만 쓰면 되고, GitHub을 만질 필요는 없습니다.
+친구는 홈페이지 하단 **관리자**로 들어가 글과 사진을 수정하면 됩니다. GitHub을 만질 필요는 없습니다.
+
+관리자 주소: `/admin` (예: https://influence-ruby.vercel.app/admin)
 
 ### Neon 연결 (한 번만)
 
-1. https://console.neon.tech 에서 GitHub으로 가입
-2. 프로젝트 이름 `influence` 로 생성
-3. **Connect** 버튼에서 연결 문자열 복사 (Pooled connection 권장)
-4. Vercel의 `influence-api` 프로젝트 → Settings → Environment Variables
+지금처럼 프론트만 Vercel에 올린 경우에는 **그 프로젝트**에 `DATABASE_URL`을 넣으면 됩니다.
+
+1. https://console.neon.tech 에서 `influence` 프로젝트 열기
+2. **Connect** → Pooled connection 문자열 복사
+3. Vercel `influence-ruby` (또는 프론트 프로젝트) → Settings → Environment Variables
    - `DATABASE_URL` = 복사한 문자열
-5. API 프로젝트 Redeploy
+   - `ADMIN_PASSWORD` = 관리자 비밀번호
+4. Redeploy
 
-연결 문자열 예:
-
-```
-postgresql://USER:PASSWORD@ep-xxxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-```
-
-### Vercel 프로젝트
-
-1. Frontend — Root Directory `frontend`
-   - `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_URL`, `API_URL`
-2. Backend — Root Directory `backend`
-   - `ADMIN_PASSWORD`, `ADMIN_SECRET`, `FRONTEND_URL`, `DATABASE_URL`
+`NEXT_PUBLIC_API_URL` 은 비워 두세요. 같은 사이트 주소의 `/api` 를 사용합니다.
 

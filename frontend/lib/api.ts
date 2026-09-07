@@ -2,7 +2,11 @@ import axios from "axios";
 import { fallbackCampaigns, fallbackInfluencers, fallbackPortfolio, fallbackSettings } from "@/lib/fallback";
 import type { Campaign, Influencer, Inquiry, Portfolio, SiteSetting, Stats } from "@/lib/types";
 
-const serverBase = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const serverBase = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.API_URL && !process.env.API_URL.includes("localhost")
+    ? process.env.API_URL
+    : "http://localhost:3000";
 const clientBase = process.env.NEXT_PUBLIC_API_URL || "";
 
 export const api = axios.create({
@@ -34,7 +38,7 @@ api.interceptors.request.use((config) => {
 async function fetchPublic<T>(path: string, fallback: T): Promise<T> {
   try {
     const response = await fetch(`${serverBase}${path}`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
     if (!response.ok) return fallback;
     return (await response.json()) as T;

@@ -17,6 +17,8 @@ const display = Playfair_Display({
   variable: "--font-display",
 });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
