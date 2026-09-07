@@ -49,8 +49,8 @@ async function handle(request: NextRequest, ctx: Ctx, method: string) {
     if (resource === "auth" && parts[1] === "login" && method === "POST") {
       const body = await readBody(request);
       const rows = await sql`SELECT admin_password FROM settings LIMIT 1`;
-      const expected = rows[0]?.admin_password || defaultPassword();
-      if (body.password !== expected) {
+      const expected = String(rows[0]?.admin_password || defaultPassword());
+      if (String(body.password ?? "") !== expected) {
         return json({ detail: "비밀번호가 올바르지 않습니다." }, 401);
       }
       return json({ token: await createToken() });

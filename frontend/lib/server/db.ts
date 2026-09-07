@@ -95,8 +95,9 @@ export async function ensureDb() {
   }
   const [{ count: settingCount }] = await sql`SELECT COUNT(*)::int AS count FROM settings`;
   if (settingCount === 0) {
-    await sql`INSERT INTO settings (email, phone, address, instagram, tagline, reply_note)
-      VALUES (${fallbackSettings.email}, ${fallbackSettings.phone}, ${fallbackSettings.address}, ${fallbackSettings.instagram}, ${fallbackSettings.tagline}, ${fallbackSettings.reply_note})`;
+    const initialPassword = process.env.ADMIN_PASSWORD || "admin123";
+    await sql`INSERT INTO settings (email, phone, address, instagram, tagline, reply_note, admin_password)
+      VALUES (${fallbackSettings.email}, ${fallbackSettings.phone}, ${fallbackSettings.address}, ${fallbackSettings.instagram}, ${fallbackSettings.tagline}, ${fallbackSettings.reply_note}, ${initialPassword})`;
   }
   return sql;
 }

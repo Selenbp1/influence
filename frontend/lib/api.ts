@@ -4,13 +4,9 @@ import type { Campaign, Influencer, Inquiry, Portfolio, SiteSetting, Stats } fro
 
 const serverBase = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : process.env.API_URL && !process.env.API_URL.includes("localhost")
-    ? process.env.API_URL
-    : "http://localhost:3000";
-const clientBase = process.env.NEXT_PUBLIC_API_URL || "";
+  : "http://localhost:3000";
 
 export const api = axios.create({
-  baseURL: clientBase,
   timeout: 30000,
 });
 
