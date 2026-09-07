@@ -1,0 +1,202 @@
+from sqlalchemy.orm import Session
+
+from models import Campaign, Influencer, Portfolio, SiteSetting
+
+INFLUENCERS = [
+    {
+        "name": "김서연",
+        "handle": "seoyeon.trip",
+        "category": "여행",
+        "platform": "Naver",
+        "followers": 182000,
+        "bio": "유럽·국내 소도시를 천천히 걷는 여행 에디터. 숙소와 동선의 디테일로 독자의 예약을 이끕니다.",
+        "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "seoyeon.trip",
+        "featured": True,
+    },
+    {
+        "name": "이하준",
+        "handle": "hajoon.stay",
+        "category": "리빙",
+        "platform": "Naver",
+        "followers": 146000,
+        "bio": "공간과 물건을 오래 쓰는 법을 기록하는 리빙 크리에이터. 홈스타일링과 리빙 브랜드 론칭에 강합니다.",
+        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "hajoon.stay",
+        "featured": True,
+    },
+    {
+        "name": "박민재",
+        "handle": "minjae.money",
+        "category": "경제",
+        "platform": "Naver",
+        "followers": 210000,
+        "bio": "소비와 재테크를 쉬운 언어로 번역하는 경제 인플루언서. 금융·커머스 캠페인 전환에 특화되어 있습니다.",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "minjae.money",
+        "featured": True,
+    },
+    {
+        "name": "정유나",
+        "handle": "yuna.table",
+        "category": "푸드",
+        "platform": "Naver",
+        "followers": 128000,
+        "bio": "로컬 식재료와 테이블 연출을 다루는 푸드 크리에이터. 브랜드의 취향을 장면으로 만듭니다.",
+        "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "yuna.table",
+        "featured": False,
+    },
+    {
+        "name": "최도윤",
+        "handle": "doyun.gear",
+        "category": "테크",
+        "platform": "Naver",
+        "followers": 98000,
+        "bio": "일상 속 기기와 생산성 툴을 리뷰하는 테크 에디터. 스펙보다 사용 맥락을 설득합니다.",
+        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "doyun.gear",
+        "featured": False,
+    },
+    {
+        "name": "한소희",
+        "handle": "sohee.atelier",
+        "category": "뷰티",
+        "platform": "Naver",
+        "followers": 167000,
+        "bio": "피부 결을 살리는 미니멀 뷰티 콘텐츠. 성분과 텍스처를 차분하게 전달합니다.",
+        "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80",
+        "naver_url": "https://in.naver.com/",
+        "instagram": "sohee.atelier",
+        "featured": True,
+    },
+]
+
+CAMPAIGNS = [
+    {
+        "title": "제주 프라이빗 스테이 론칭",
+        "brand": "ATELIER JEJU",
+        "category": "여행",
+        "description": "네이버 여행 인플루언서 8인과 함께 숙소의 동선, 빛, 로컬 동선을 콘텐츠화한 예약 전환 캠페인입니다.",
+        "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+        "status": "완료",
+        "result_metric": "도달 420만 · 예약 전환 +38%",
+        "start_date": "2025-09",
+    },
+    {
+        "title": "어반 리빙 컬렉션",
+        "brand": "HOUSE FORM",
+        "category": "리빙",
+        "description": "리빙 인플루언서의 실제 주거 공간에 제품을 배치하고, 네이버 인플루언서 홈과 블로그를 동시에 운영했습니다.",
+        "image": "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1600&q=80",
+        "status": "완료",
+        "result_metric": "저장 12.4만 · 문의 +61%",
+        "start_date": "2026-01",
+    },
+    {
+        "title": "스마트 자산 가이드",
+        "brand": "NORTH LEDGER",
+        "category": "경제",
+        "description": "경제 인플루언서와 카드·증권 브랜드의 신뢰 콘텐츠를 설계하고, 검색 유입형 시리즈로 운영했습니다.",
+        "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=80",
+        "status": "진행중",
+        "result_metric": "시리즈 조회 190만",
+        "start_date": "2026-06",
+    },
+    {
+        "title": "시즌 테이블 에디션",
+        "brand": "TABLE NOTE",
+        "category": "푸드",
+        "description": "푸드 크리에이터의 플레이팅과 레시피 노트를 네이버 검색 키워드에 맞춰 설계한 시즌 캠페인입니다.",
+        "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80",
+        "status": "진행중",
+        "result_metric": "레시피 저장 8.1만",
+        "start_date": "2026-08",
+    },
+]
+
+PORTFOLIOS = [
+    {
+        "title": "Brand × Island",
+        "client": "ATELIER JEJU",
+        "category": "여행",
+        "description": "제주의 빛과 바람을 브랜드의 톤으로 옮긴 숙소 론칭 캠페인. 인플루언서의 동선 콘텐츠가 실제 예약으로 이어졌습니다.",
+        "image": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1800&q=80",
+        "reach": "4.2M",
+        "engagement": "6.8%",
+        "year": "2025",
+        "featured": True,
+    },
+    {
+        "title": "Quiet Rooms",
+        "client": "HOUSE FORM",
+        "category": "리빙",
+        "description": "제품이 공간에 놓이는 방식을 기록한 리빙 캠페인. 네이버 인플루언서 홈에서 시리즈로 발행되었습니다.",
+        "image": "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1800&q=80",
+        "reach": "2.7M",
+        "engagement": "8.1%",
+        "year": "2026",
+        "featured": True,
+    },
+    {
+        "title": "The Ledger Series",
+        "client": "NORTH LEDGER",
+        "category": "경제",
+        "description": "복잡한 금융 상품을 생활의 언어로 풀어낸 경제 콘텐츠 시리즈. 검색과 저장 중심의 성과를 만들었습니다.",
+        "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1800&q=80",
+        "reach": "1.9M",
+        "engagement": "5.4%",
+        "year": "2026",
+        "featured": True,
+    },
+    {
+        "title": "First Light Kitchen",
+        "client": "TABLE NOTE",
+        "category": "푸드",
+        "description": "아침 식탁을 브랜드 세계관으로 만든 푸드 캠페인. 레시피와 기물, 플레이팅이 하나의 톤으로 연결됩니다.",
+        "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1800&q=80",
+        "reach": "1.4M",
+        "engagement": "7.2%",
+        "year": "2026",
+        "featured": False,
+    },
+    {
+        "title": "Skin, Unfiltered",
+        "client": "ATELIER SKIN",
+        "category": "뷰티",
+        "description": "과장 없는 텍스처 컷과 루틴 콘텐츠로 브랜드 신뢰도를 올린 뷰티 캠페인입니다.",
+        "image": "https://images.unsplash.com/photo-1616394584738-fc6e612cf230?auto=format&fit=crop&w=1800&q=80",
+        "reach": "2.1M",
+        "engagement": "9.0%",
+        "year": "2025",
+        "featured": False,
+    },
+    {
+        "title": "Work, Softly",
+        "client": "NOIR DESK",
+        "category": "테크",
+        "description": "생산성 기기를 책상 위 오브제로 재해석한 테크 리빙 캠페인.",
+        "image": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1800&q=80",
+        "reach": "980K",
+        "engagement": "4.9%",
+        "year": "2025",
+        "featured": False,
+    },
+]
+
+
+def seed_if_empty(db: Session) -> None:
+    if db.query(Influencer).count() == 0:
+        db.add_all([Influencer(**row) for row in INFLUENCERS])
+    if db.query(Campaign).count() == 0:
+        db.add_all([Campaign(**row) for row in CAMPAIGNS])
+    if db.query(Portfolio).count() == 0:
+        db.add_all([Portfolio(**row) for row in PORTFOLIOS])
+    if db.query(SiteSetting).count() == 0:
+        db.add(SiteSetting())
+    db.commit()
