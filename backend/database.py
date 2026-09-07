@@ -2,8 +2,12 @@ import os
 import shutil
 from pathlib import Path
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 BUNDLED_DB = BASE_DIR / "data" / "influence.db"
@@ -13,7 +17,7 @@ def normalize_database_url(url: str | None) -> str | None:
     if not url:
         return None
     if url.startswith("postgres://"):
-        return url.replace("postgres://", "postgresql://", 1)
+        url = url.replace("postgres://", "postgresql://", 1)
     return url
 
 
@@ -35,9 +39,20 @@ def resolve_sqlite_path() -> Path:
 
 DB_PATH = resolve_sqlite_path()
 SQLALCHEMY_DATABASE_URL = normalize_database_url(os.getenv("DATABASE_URL")) or f"sqlite:///{DB_PATH.as_posix()}"
+IS_POSTGRES = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
 
-connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
+if IS_POSTGRES:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        poolclass=NullPool,
+        pool_pre_ping=True,
+    )
+else:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        connect_args={"check_same_thread": False},
+    )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
